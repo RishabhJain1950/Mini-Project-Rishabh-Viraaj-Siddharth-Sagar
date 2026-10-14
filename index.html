@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#07110e" />
+    <title>ESP32 Power Monitor</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <main class="dashboard">
+      <header>
+        <div>
+          <p class="eyebrow">TY MINI PROJECT · LIVE TELEMETRY</p>
+          <h1>Power Monitor</h1>
+        </div>
+        <div class="connection" aria-live="polite">
+          <span id="statusDot" class="status-dot"></span>
+          <span id="statusText">Disconnected</span>
+        </div>
+      </header>
+
+      <section class="hero-panel">
+        <div>
+          <p class="section-label">ESP32 + INA226</p>
+          <h2>Live power <span>&amp; current history</span></h2>
+          <p id="message" class="message">Connect to your ESP32 to begin receiving measurements.</p>
+        </div>
+        <button id="connectButton" class="connect-button" type="button">Connect Bluetooth</button>
+      </section>
+
+      <section class="metrics" aria-label="Live electrical measurements">
+        <article class="metric-card voltage-card">
+          <div class="metric-top"><span>VOLTAGE</span><span class="metric-icon">V</span></div>
+          <div class="reading"><span id="voltage">--.--</span><small>V</small></div>
+          <p>INA226 bus voltage</p>
+        </article>
+        <article class="metric-card current-card">
+          <div class="metric-top"><span>CURRENT</span><span class="metric-icon">A</span></div>
+          <div class="reading"><span id="current">--.---</span><small>A</small></div>
+          <p>Current through shunt</p>
+        </article>
+        <article class="metric-card power-card">
+          <div class="metric-top"><span>POWER</span><span class="metric-icon">W</span></div>
+          <div class="reading"><span id="power">--.--</span><small>W</small></div>
+          <p>Calculated in real time</p>
+        </article>
+      </section>
+
+      <section class="history-panel" aria-labelledby="historyTitle">
+        <div class="history-header">
+          <div>
+            <p class="section-label">CURRENT OVER TIME</p>
+            <h3 id="historyTitle">Current recording</h3>
+            <p id="recordingStatus" class="secondary">Waiting for Bluetooth</p>
+          </div>
+          <div class="history-actions">
+            <label for="chartWindow">View
+              <select id="chartWindow">
+                <option value="0">Full recording</option>
+                <option value="60000">Last 60 seconds</option>
+                <option value="300000">Last 5 minutes</option>
+              </select>
+            </label>
+            <button id="exportButton" class="secondary-button" type="button" disabled>Export CSV</button>
+            <button id="clearButton" class="secondary-button" type="button" disabled>Clear recording</button>
+          </div>
+        </div>
+        <dl class="recording-stats">
+          <div><dt>Peak current</dt><dd><span id="peakCurrent">—</span> <small>A</small></dd></div>
+          <div><dt>Peak received at</dt><dd id="peakTime" class="time-reading">—</dd><p id="peakElapsed" class="secondary">Highest received reading</p></div>
+          <div><dt>Recorded span</dt><dd id="recordingDuration" class="time-reading">00:00:00</dd></div>
+          <div><dt>Readings</dt><dd id="sampleCount">0</dd></div>
+        </dl>
+        <canvas id="currentChart" tabindex="0" role="img" aria-label="Current in amperes over elapsed recording time. Use left and right arrow keys to inspect readings." aria-describedby="chartDetail chartNote"></canvas>
+        <p id="chartDetail" class="chart-detail" aria-live="off">Connect Bluetooth to start plotting current readings.</p>
+        <p id="chartNote" class="chart-note">Elapsed time on the horizontal axis. Clock times use this laptop’s local time. Readings arrive about every 500 ms, so brief spikes may be missed. History stays in this tab until cleared or reloaded; export CSV to save every reading.</p>
+      </section>
+
+      <section class="control-panel">
+        <div>
+          <p class="section-label">GPIO 18 · MOSFET OUTPUT</p>
+          <h3>Load control</h3>
+          <p id="mosfetDescription">The load is currently off.</p>
+        </div>
+        <button id="mosfetButton" class="toggle" type="button" role="switch" aria-checked="false" disabled>
+          <span class="toggle-track"><span class="toggle-knob"></span></span>
+          <span id="mosfetLabel">OFF</span>
+        </button>
+      </section>
+
+      <footer><span>500 ms refresh</span><span>Bluetooth Low Energy</span><span>Local connection</span></footer>
+    </main>
+    <script type="module" src="app.js"></script>
+  </body>
+</html>
